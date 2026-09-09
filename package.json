@@ -1,0 +1,22 @@
+{
+  "name": "internal-operations-service-hub",
+  "version": "0.2.0",
+  "private": true,
+  "description": "AI Academy 2026 Operations Hub Week 2 milestone",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently --names backend,frontend --prefix-colors blue,magenta \"npm run dev --workspace backend\" \"npm run dev --workspace frontend\"",
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "concurrently": "9.2.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

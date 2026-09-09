@@ -1,0 +1,11 @@
+[
+  {
+    "id": "REQ-1001",
+    "requesterId": "employee-001",
+    "department": "IT",
+    "category": "Laptop Support",
+    "description": "Laptop cannot connect to the office Wi-Fi.",
+    "status": "SUBMITTED",
+    "updatedAt": "2026-09-09T08:00:00.000Z"
+  }
+]
