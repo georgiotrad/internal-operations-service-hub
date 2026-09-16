@@ -20,7 +20,10 @@ export class RequestsController {
     @Headers('x-user-id') userId: string | undefined,
     @Headers('x-role') role: string | undefined,
   ) {
-    return this.requestsService.getById(id, this.identity(userId, role));
+    return this.requestsService.getById(
+      id,
+      this.identity(userId, role),
+    );
   }
 
   @Patch(':id/status')
@@ -31,7 +34,9 @@ export class RequestsController {
     @Headers('x-role') role: string | undefined,
   ) {
     if (!body.status) {
-      throw new BadRequestException('A target status is required.');
+      throw new BadRequestException(
+        'A target status is required.',
+      );
     }
 
     return this.requestsService.updateStatus(
@@ -41,13 +46,22 @@ export class RequestsController {
     );
   }
 
-  private identity(userId?: string, role?: string): LocalIdentity {
-    if (!userId || (role !== 'EMPLOYEE' && role !== 'IT_STAFF')) {
+  private identity(
+    userId?: string,
+    role?: string,
+  ): LocalIdentity {
+    if (
+      !userId ||
+      (role !== 'EMPLOYEE' && role !== 'IT_STAFF')
+    ) {
       throw new BadRequestException(
         'Local development identity headers x-user-id and x-role are required.',
       );
     }
 
-    return { userId, role: role as LocalRole };
+    return {
+      userId,
+      role: role as LocalRole,
+    };
   }
 }
