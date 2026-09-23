@@ -2,12 +2,13 @@
   "name": "operations-hub-backend",
   "version": "0.2.0",
   "private": true,
-  "scripts": {
-    "dev": "nest start --watch",
-    "build": "nest build",
-    "start": "node dist/main.js",
-    "test": "jest"
-  },
+ "scripts": {
+  "dev": "nest start --watch",
+  "build": "nest build",
+  "start": "node dist/main.js",
+  "test": "jest",
+  "eval:ai": "jest request-intake.eval.spec.ts --runInBand"
+},
   "dependencies": {
     "@nestjs/common": "11.2.3",
     "@nestjs/core": "11.2.3",

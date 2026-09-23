@@ -1,48 +1,144 @@
-# Internal Operations Service Hub
+Internal Operations Service Hub
 
-## v0.3 — Integrated Product Slice
+v0.4 --- Production AI Feature
 
-The Internal Operations Service Hub is a company-internal application for requesting and tracking operational support from departments such as IT, HR, and Finance.
+The Internal Operations Service Hub is a company-internal application
+for requesting and tracking operational support from departments such as
+IT, HR, and Finance.
 
-Version 0.3 delivers one complete Service Request flow using:
+Version 0.4 preserves the integrated Service Request flow delivered in
+v0.3 and adds a narrow AI-assisted Request Intake feature. Employees can
+describe an operational problem in natural language and receive a
+structured request suggestion inside the trusted product context.
 
-- React frontend
-- NestJS backend
-- SQLite database persistence
-- Authorization rules
-- Request lifecycle validation
-- Automated unit, integration, and end-to-end tests
+The application demonstrates:
 
----
+React frontend
 
-## Implemented Service Request Flow
+NestJS backend
 
-The current integrated slice uses the seeded service request:
+SQLite database persistence
 
-- Request ID: `REQ-1001`
-- Requester: `employee-001`
-- Department: `IT`
-- Category: `Laptop Support`
-- Description: `Laptop cannot connect to the office Wi-Fi.`
-- Initial status: `SUBMITTED`
+authorization rules
 
-An authorized IT staff member can start work on the request:
+request lifecycle validation
 
-```text
+AI-assisted request intake
+
+structured AI output validation
+
+safe AI failure handling
+
+automated unit, integration, end-to-end, and AI evaluation tests
+
+v0.4 AI-Assisted Request Intake
+
+Employees can enter a natural-language description of an operational
+problem and request AI assistance.
+
+The AI-assisted flow produces a structured suggestion containing:
+
+department
+
+category
+
+description
+
+clarification requirement
+
+clarification question when needed
+
+Example input:
+
+My laptop cannot connect to the office Wi-Fi since this morning.
+
+Example structured suggestion:
+
+Department: IT
+Category: Laptop Support
+Description: My laptop cannot connect to the office Wi-Fi since this morning.
+Needs clarification: No
+
+AI suggestions are advisory. The employee reviews the information before
+using it.
+
+The AI feature does not directly mutate the persisted Service Request
+lifecycle.
+
+AI Safety and Product Boundary
+
+AI output is treated as untrusted input. The backend validates
+AI-generated output before returning it to the frontend. Output outside
+the trusted product context is rejected.
+
+The implementation also handles AI provider failure safely so that a
+provider error does not become an uncontrolled application failure.
+
+AI assists with request intake and classification; authorization,
+lifecycle rules, and persistence remain deterministic application
+responsibilities.
+
+AI Evaluation Coverage
+
+The AI-assisted Request Intake evaluation suite covers:
+
+classification of a clear laptop Wi-Fi problem
+
+classification of an account problem that requires clarification
+
+classification of a Finance expense-reimbursement request
+
+ambiguous or thin employee input
+
+empty employee input
+
+invalid AI output outside the trusted product context
+
+AI provider failure
+
+Run the AI evaluation suite with:
+
+npm run eval:ai --workspace backend
+
+Detailed Week 4 implementation notes are available in:
+
+docs/week4-production-ai.md
+
+v0.3 --- Integrated Product Slice
+
+Version 0.3 delivered one complete Service Request flow using React,
+NestJS, SQLite persistence, authorization, lifecycle validation, and
+automated tests.
+
+The v0.4 work builds on this slice rather than replacing it.
+
+Implemented Service Request Flow
+
+The seeded request is:
+
+Request ID: REQ-1001
+
+Requester: employee-001
+
+Department: IT
+
+Category: Laptop Support
+
+Description: Laptop cannot connect to the office Wi-Fi.
+
+Initial status: SUBMITTED
+
+An authorized IT staff member can perform:
+
 SUBMITTED -> IN_PROGRESS
-```
 
-An employee cannot perform this staff-only action.
+An employee cannot perform this staff-only action. Invalid lifecycle
+transitions are rejected without changing the persisted request.
 
-Invalid lifecycle transitions are rejected without changing the persisted request.
+Architecture
 
----
+Core Service Request path:
 
-## Architecture
-
-The application uses the following request path:
-
-```text
 React Frontend
       |
       v
@@ -56,165 +152,121 @@ RequestsRepository
       |
       v
 SQLite Database
-```
 
-### Frontend
+AI-assisted intake path:
+
+Employee Input
+      |
+      v
+React Frontend
+      |
+      v
+NestJS Request Intake
+      |
+      v
+AI-assisted classification
+      |
+      v
+Validation / trusted product boundary
+      |
+      v
+Structured advisory suggestion
+
+Frontend
 
 The frontend is implemented with React and Vite.
 
-### Backend
+Backend
 
 The backend is implemented with NestJS.
 
-### Persistence
+Persistence
 
-Service requests are persisted in a real SQLite relational database using `better-sqlite3`.
+Service requests are persisted in a real SQLite relational database
+using better-sqlite3.
 
 The development database is created automatically at:
 
-```text
 backend/data/operations-hub.db
-```
 
 No separate database server is required.
 
----
+Requirements
 
-## Requirements
+Install Node.js, npm, and Git.
 
-Install:
+Installation
 
-- Node.js
-- npm
-- Git
-
----
-
-## Installation
-
-Clone the repository:
-
-```powershell
 git clone https://github.com/georgiotrad/internal-operations-service-hub.git
-```
-
-Enter the project:
-
-```powershell
 cd internal-operations-service-hub
-```
-
-Install dependencies:
-
-```powershell
 npm install
-```
 
----
-
-## Run the Application
+Run the Application
 
 From the repository root:
 
-```powershell
 npm run dev
-```
 
-The backend normally runs at:
+The backend normally runs at http://localhost:3000.
 
-```text
-http://localhost:3000
-```
+The frontend normally runs at http://localhost:5173. If port 5173 is
+occupied, Vite may use another available port such as 5174.
 
-The frontend normally runs at:
+Exercise the AI-Assisted Intake Flow
 
-```text
-http://localhost:5173
-```
+Open the frontend and enter an operational problem such as:
 
-If port `5173` is already occupied, Vite may automatically use another available port such as `5174`.
-
----
-
-## Exercise the User Flow
-
-Open the frontend in your browser.
-
-Use the local development identity selector to test the authorization behavior.
-
-### Authorized IT Staff Flow
-
-Select the IT Staff identity.
-
-Open request:
-
-```text
-REQ-1001
-```
+My laptop cannot connect to the office Wi-Fi since this morning.
 
 Select:
 
-```text
-Start work
-```
+Get AI assistance
+
+Review the structured suggestion. The interface reminds the user that AI
+suggestions are advisory.
+
+Exercise the Service Request Flow
+
+Use the local development identity selector.
+
+Authorized IT Staff Flow
+
+Select IT Staff and select Start work for REQ-1001.
 
 Expected transition:
 
-```text
 SUBMITTED -> IN_PROGRESS
-```
 
 The updated status is persisted in SQLite.
 
-### Unauthorized Employee Flow
+Unauthorized Employee Flow
 
-Select the Employee identity.
-
-Attempt the same staff status update.
+Select Employee and attempt the same update.
 
 Expected result:
 
-```text
 403 Forbidden
-```
 
 The request remains unchanged.
 
----
+API Contract
 
-## API Contract
+Get a Service Request
 
-### Get a Service Request
-
-Endpoint:
-
-```text
 GET /api/requests/:id
-```
 
 Required local-development headers:
 
-```text
 x-user-id
 x-role
-```
 
 Supported roles:
 
-```text
 EMPLOYEE
 IT_STAFF
-```
-
-Example request:
-
-```text
-GET /api/requests/REQ-1001
-```
 
 Example successful response:
 
-```json
 {
   "id": "REQ-1001",
   "requesterId": "employee-001",
@@ -224,313 +276,161 @@ Example successful response:
   "status": "SUBMITTED",
   "updatedAt": "2026-09-09T08:00:00.000Z"
 }
-```
 
 Possible responses:
 
-- `200` — request returned successfully
-- `400` — development identity is missing or invalid
-- `403` — user is not authorized to view the request
-- `404` — request does not exist
-- `500` — persistence layer is unavailable
+200 --- request returned successfully
 
----
+400 --- development identity is missing or invalid
 
-## Update Request Status
+403 --- user is not authorized
 
-Endpoint:
+404 --- request does not exist
 
-```text
+500 --- persistence layer is unavailable
+
+Update Request Status
+
 PATCH /api/requests/:id/status
-```
 
-Required headers:
+Example body:
 
-```text
-x-user-id
-x-role
-```
-
-Example request body:
-
-```json
 {
   "status": "IN_PROGRESS"
 }
-```
-
-Example successful response:
-
-```json
-{
-  "id": "REQ-1001",
-  "requesterId": "employee-001",
-  "department": "IT",
-  "category": "Laptop Support",
-  "description": "Laptop cannot connect to the office Wi-Fi.",
-  "status": "IN_PROGRESS",
-  "updatedAt": "<generated ISO timestamp>"
-}
-```
 
 Possible responses:
 
-- `200` — status changed successfully
-- `400` — target status is missing or lifecycle transition is invalid
-- `403` — user is not authorized to change the status
-- `404` — request does not exist
-- `500` — persistence operation failed
+200 --- status changed successfully
 
----
+400 --- target status is missing or lifecycle transition is
+invalid
 
-## Authorization Rule
+403 --- user is not authorized to change the status
+
+404 --- request does not exist
+
+500 --- persistence operation failed
+
+Authorization Rule
 
 Only authorized IT staff can change the status of an IT service request.
 
-### Allowed
+Allowed:
 
-```text
 Role: IT_STAFF
 Department: IT
-```
 
-An IT staff member can perform:
+Denied:
 
-```text
-SUBMITTED -> IN_PROGRESS
-```
-
-### Denied
-
-```text
 Role: EMPLOYEE
-```
 
-An employee attempting the same operation receives:
+A denied operation does not modify the persisted request.
 
-```text
-403 Forbidden
-```
+Request Lifecycle
 
-The denied operation does not modify the persisted request.
+Supported transitions are:
 
----
-
-## Request Lifecycle
-
-Currently supported transitions are:
-
-```text
 SUBMITTED -> IN_PROGRESS
 IN_PROGRESS -> COMPLETED
-```
 
-Other transitions are rejected.
+Other transitions are rejected with 400 Bad Request, and the persisted
+request remains in its previous state.
 
-For example:
+Expected Failure Handling
 
-```text
-SUBMITTED -> COMPLETED
-```
+SQLite operations use controlled error handling. If the request store
+becomes unavailable, the backend returns a controlled
+500 Internal Server Error instead of exposing an uncontrolled database
+failure.
 
-returns:
+The AI-assisted intake flow also deliberately handles provider failure
+and invalid AI output.
 
-```text
-400 Bad Request
-```
+Automated Tests
 
-The request remains in its previous state.
+Run all backend tests:
 
----
-
-## Expected Failure Handling
-
-SQLite operations are protected by controlled error handling.
-
-If the request store becomes unavailable, the backend returns a controlled server error rather than exposing an uncontrolled database failure.
-
-For example, an unavailable database during a read operation results in:
-
-```text
-500 Internal Server Error
-```
-
-with the message:
-
-```text
-The request store is unavailable.
-```
-
-The automated E2E coverage deliberately exercises this failure case.
-
----
-
-## Automated Tests
-
-Run all backend tests from the repository root:
-
-```powershell
 npm test --workspace backend
-```
 
-The automated test suite covers:
+Coverage includes business rules, authorization, lifecycle validation,
+SQLite persistence, backend-to-database integration, HTTP E2E behavior,
+expected database failure handling, regression protection, and
+AI-assisted request-intake evaluations.
 
-- service-level business rules
-- authorized IT staff actions
-- denied employee actions
-- lifecycle transition validation
-- real SQLite persistence
-- backend-to-database integration
-- HTTP end-to-end behavior
-- expected database failure handling
-- regression protection
+Service Tests
 
-### Service Tests
-
-```text
 backend/src/requests/requests.service.spec.ts
-```
 
-Tests the core business and authorization rules.
+Repository Integration Tests
 
-### Repository Integration Tests
-
-```text
 backend/src/requests/requests.repository.spec.ts
-```
 
-Tests the backend repository against a real SQLite database.
+End-to-End Tests
 
-### End-to-End Tests
-
-```text
 backend/src/requests/requests.e2e.spec.ts
-```
 
-Exercises the real HTTP flow through:
+The E2E path is:
 
-```text
 HTTP -> Controller -> Service -> Repository -> SQLite
-```
 
----
+AI Evaluation Tests
 
-## Build
+Run independently with:
 
-Build the backend:
+npm run eval:ai --workspace backend
 
-```powershell
+The evaluation suite exercises normal cases, ambiguous input, invalid
+output, and provider failure.
+
+Build and Final Verification
+
 npm run build --workspace backend
-```
-
-Build the frontend:
-
-```powershell
 npm run build --workspace frontend
-```
+npm test --workspace backend
+npm run eval:ai --workspace backend
 
-Both builds should complete successfully before submission.
-
----
-
-## Verification Script
+Verification Script
 
 Start the backend:
 
-```powershell
 npm run dev:backend
-```
 
-Then, from another terminal, run:
+In another terminal:
 
-```powershell
 node scripts/verify.mjs
-```
 
-The verification script checks:
+The verification script checks requester access, denied employee
+updates, persistence protection, authorized IT updates, valid transition
+persistence, invalid transition rejection, and unchanged state after
+rejection.
 
-```text
-PASS: requester can view seeded request
-PASS: employee cannot perform staff status update
-PASS: unauthorized attempt does not change persisted state
-PASS: IT staff can start work
-PASS: valid transition is persisted in SQLite
-PASS: invalid lifecycle transition is rejected
-PASS: invalid transition leaves persisted state unchanged
-```
+Regression Protection
 
-A successful run ends with:
+The v0.4 AI feature is additive. Existing behavior remains protected,
+including requester access, employee authorization denial, IT staff
+status changes, SQLite persistence, and lifecycle validation.
 
-```text
-Verification complete.
-```
+Delivery Documentation
 
----
+Week 3 full-stack delivery:
 
-## Regression Protection
-
-Behavior implemented before Week 3 remains protected.
-
-Regression coverage verifies that:
-
-- the seeded requester can still view the request;
-- an employee cannot perform a staff status update;
-- unauthorized attempts do not modify persisted state;
-- IT staff can start work;
-- valid transitions are persisted;
-- invalid transitions are rejected;
-- rejected transitions leave the persisted state unchanged.
-
----
-
-## Week 3 Delivery Documentation
-
-Detailed implementation and evidence are documented in:
-
-```text
 docs/week3-full-stack-delivery.md
-```
 
-The document describes:
+Week 4 production AI delivery:
 
-- the delivered full-stack slice;
-- architecture;
-- SQLite persistence;
-- API request and response contract;
-- authorization;
-- invalid request handling;
-- expected failure handling;
-- automated testing;
-- E2E coverage;
-- regression protection;
-- manual verification.
+docs/week4-production-ai.md
 
----
+Development Authentication
 
-## Development Authentication
+The x-user-id and x-role headers and frontend identity selector are
+local-development mechanisms used to demonstrate authorization. They are
+not production authentication.
 
-The current:
+Current Scope
 
-```text
-x-user-id
-x-role
-```
+The current application includes:
 
-headers and frontend identity selector are local-development mechanisms.
-
-They are used to demonstrate authorization behavior for this integrated product slice.
-
-They are not intended to represent production authentication.
-
----
-
-## Week 3 Scope
-
-Version 0.3 intentionally focuses on one narrow, complete, working product slice.
-
-It includes:
-
-```text
 React frontend
         +
 NestJS backend
@@ -541,17 +441,13 @@ Authorization
         +
 Validation
         +
-Automated tests
-```
+AI-assisted request intake
+        +
+Automated tests and AI evaluations
 
-The Week 3 implementation intentionally does not add unrelated infrastructure such as:
+The AI feature assists with interpreting employee request text. It does
+not replace deterministic authorization, lifecycle validation, or
+persistence logic.
 
-- external integrations
-- runtime AI
-- RAG
-- MCP
-- CI/CD
-- deployment infrastructure
-- production monitoring
-
-The goal of v0.3 is a repeatable, persistent, authorized, and testable full-stack Service Request flow.
+The goal is a repeatable, persistent, authorized, testable, and safely
+AI-assisted Internal Operations Service Hub.

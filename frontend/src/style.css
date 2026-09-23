@@ -1,28 +1,96 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: system-ui, sans-serif;
   margin: 0;
-  background: #f5f6f8;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f6f8;
   color: #1f2937;
 }
+
 .page {
-  max-width: 760px;
-  margin: 48px auto;
-  padding: 24px;
+  width: min(900px, 92%);
+  margin: 40px auto;
 }
-.tagline { color: #4b5563; }
-label { display: grid; gap: 8px; margin: 24px 0 12px; }
-select, button {
-  font: inherit;
-  padding: 10px 12px;
-  margin-right: 8px;
+
+h1 {
+  margin-bottom: 6px;
 }
+
+.tagline {
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: #6b7280;
+}
+
 .card {
-  margin-top: 24px;
-  padding: 20px;
   background: white;
   border: 1px solid #d1d5db;
   border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
 }
+
+.card h2 {
+  margin-top: 0;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin: 18px 0 8px;
+}
+
+textarea,
+select {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid #9ca3af;
+  border-radius: 8px;
+  font: inherit;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  margin-top: 16px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.candidate {
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #f9fafb;
+}
+
+.candidate h3 {
+  margin-top: 0;
+}
+
+.advisory {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid #d1d5db;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
 .message {
   margin-top: 16px;
   padding: 12px;
