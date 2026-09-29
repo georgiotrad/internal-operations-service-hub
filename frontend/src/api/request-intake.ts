@@ -6,11 +6,15 @@ export interface IntakeCandidate {
   clarificationQuestion: string | null;
 }
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ??
+  'http://localhost:3000';
+
 export async function assistRequestIntake(
   text: string,
 ): Promise<IntakeCandidate> {
   const response = await fetch(
-    'http://localhost:3000/api/request-intake/assist',
+    `${API_BASE_URL}/api/request-intake/assist`,
     {
       method: 'POST',
       headers: {
